@@ -1,0 +1,1 @@
+DROP TABLE "public"."dataset_feature_definitions";

@@ -1,0 +1,7 @@
+pin-depends: [
+  ["tyxml-lwd.~dev" "git+https://github.com/let-def/lwd.git#tyxml-scheduler"]
+  ["opium-testing.~dev" "git+https://github.com/rgrinberg/opium.git"]
+  ["opium.~dev" "git+https://github.com/rgrinberg/opium.git"]
+  ["lwd.~dev" "git+https://github.com/let-def/lwd.git"]
+  ["rock.~dev" "git+https://github.com/rgrinberg/opium.git"]
+]

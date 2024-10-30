@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.2.0",
+    "@tailwindcss/forms": "^0.2.1",
+    "@tailwindcss/typography": "^0.3.1",
+    "autoprefixer": "^10.0.2",
+    "postcss": "^8.1.8",
+    "purgecss": "^3.0.0",
+    "tailwindcss": "^2.0.1"
+  }
+}

@@ -1,0 +1,8 @@
+(tests
+ (names account_test annotation_test dataset_datapoint_test dataset_test)
+ (libraries test_support alcotest alcotest-lwt ppx_rapper.runtime
+   sapiens.backend)
+ (preprocess
+  (pps ppx_rapper)))
+
+(include_subdirs unqualified)

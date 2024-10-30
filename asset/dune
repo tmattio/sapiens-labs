@@ -1,0 +1,21 @@
+(rule
+ (target main.css)
+ (deps
+  (:data ../config/tailwind.config.js)
+  (source_tree ../node_modules)
+  (env_var NODE_ENV))
+ (action
+  (chdir
+   %{workspace_root}
+   ; We use node_modules/tailwindcss/lib/cli.js instead of `npx tailwindcss`
+   ; because dune won't include node_modules/.bin in the build, no matter
+   ; what I do.
+   (run node node_modules/tailwindcss/lib/cli.js build -c
+     config/tailwind.config.js -o %{target}))))
+
+(rule
+ (target annotation-tool.js)
+ (deps
+  (:data ../bin/annotation_tool.bc.js))
+ (action
+  (run cp ../bin/annotation_tool.bc.js annotation-tool.js)))

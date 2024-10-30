@@ -1,0 +1,15 @@
+(tests
+ (names
+  ; dataset_handler_test
+  user_auth_handler_test
+  page_handler_test
+  ; user_confirmation_handler_test
+  ; user_reset_password_handler_test
+  ; user_settings_handler_test
+  ; user_registration_handler_test
+  ; user_session_handler_test
+  ; user_auth_middleware_test
+  )
+ (libraries test_support alcotest alcotest-lwt opium-testing sapiens.web))
+
+(include_subdirs unqualified)

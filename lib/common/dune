@@ -1,0 +1,6 @@
+(library
+ (name sapiens_common)
+ (public_name sapiens.common)
+ (libraries std ptime ppx_deriving_yojson.runtime)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.make ppx_deriving_yojson)))

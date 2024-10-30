@@ -1,0 +1,1 @@
+DROP VIEW "annotation_task_statistics";

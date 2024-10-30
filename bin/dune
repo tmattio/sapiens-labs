@@ -1,0 +1,17 @@
+(executable
+ (name server)
+ (libraries opium sapiens.web mirage-crypto-rng.unix)
+ (modules server))
+
+(executable
+ (name annotation_tool)
+ (flags
+  (:standard -no-check-prims))
+ (modes js)
+ (libraries sapiens.annotation-tool js_of_ocaml)
+ (modules annotation_tool))
+
+(executable
+ (name create_dataset)
+ (libraries sapiens.dataset logs logs.fmt fmt.tty)
+ (modules create_dataset))

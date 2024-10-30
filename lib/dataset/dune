@@ -1,0 +1,8 @@
+(library
+ (name sapiens_dataset)
+ (public_name sapiens.dataset)
+ (libraries sapiens.backend)
+ (preprocess
+  (pps ppx_deriving_yojson)))
+
+(include_subdirs unqualified)

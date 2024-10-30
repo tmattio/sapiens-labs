@@ -1,0 +1,12 @@
+(library
+ (name sapiens_backend)
+ (public_name sapiens.backend)
+ (libraries logs str astring lwt uri caqti caqti-driver-postgresql caqti-lwt
+   ptime ppx_rapper.runtime sexplib0 safepass mirage-crypto mirage-crypto-rng
+   cstruct base64 cohttp cohttp-lwt-unix ppx_deriving_yojson.runtime
+   sapiens.common std streaming)
+ (preprocess
+  (pps ppx_rapper ppx_sexp_conv ppx_deriving.show ppx_deriving.eq
+    ppx_deriving.make ppx_deriving_yojson ppx_fields_conv)))
+
+(include_subdirs unqualified)

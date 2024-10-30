@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build and test
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        ocaml-version: [ '4.11.0' ]
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sapiens_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Retrieve opam cache
+        uses: actions/cache@v2
+        if: runner.os != 'Windows'
+        id: cache-opam
+        with:
+          path: ~/.opam
+          key: v1-${{ runner.os }}-opam-${{ matrix.ocaml-version }}-${{ hashFiles('*.opam.locked') }}
+          restore-keys: |
+            v1-${{ runner.os }}-opam-${{ matrix.ocaml-version }}-
+
+      - name: Use OCaml ${{ matrix.ocaml-version }}
+        uses: avsm/setup-ocaml@v1
+        with:
+          ocaml-version: ${{ matrix.ocaml-version }}
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Install golang-migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.13.0/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate.linux-amd64 /usr/bin/migrate
+          which migrate
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Pin package
+        run: opam pin add sapiens.dev . --no-action
+
+      - name: Install system dependencies (Unix)
+        if: runner.os != 'Windows'
+        run: opam depext conf-libev
+
+      - name: Update opam repository
+        if: steps.cache-opam.outputs.cache-hit != 'true'
+        run: opam update
+
+      - name: Install dependencies
+        if: steps.cache-opam.outputs.cache-hit != 'true'
+        run: |
+          opam pin add -y --no-action rock.~dev https://github.com/rgrinberg/opium.git
+          opam pin add -y --no-action opium.~dev https://github.com/rgrinberg/opium.git
+          opam pin add -y --no-action opium-testing.~dev https://github.com/rgrinberg/opium.git
+          opam pin add -y --no-action lwd.~dev https://github.com/let-def/lwd.git
+          opam pin add -y --no-action tyxml-lwd.~dev https://github.com/let-def/lwd.git#tyxml-scheduler
+          opam install . -y --deps-only --with-test --locked --unlock-base
+          opam install -y ocamlformat omigrate
+
+      - name: Recover from an Opam broken state
+        if: steps.cache-opam.outputs.cache-hit == 'true'
+        run: opam upgrade --fixup
+
+      - name: Build
+        run: make build
+
+      - name: Check formatting
+        run: make fmt
+
+      - name: Run test database migrations
+        run: migrate -path migration/ -database "postgres://postgres:postgres@localhost:5432/sapiens_test?sslmode=disable" -verbose up
+
+      - name: Run tests
+        run: make test
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/sapiens_test

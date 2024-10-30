@@ -1,0 +1,29 @@
+(library
+ (name sapiens_web)
+ (public_name sapiens.web)
+ (libraries lwt uri cstruct opium sapiens.backend sapiens.common
+   mtime.clock.os ppx_deriving_yojson.runtime)
+ (preprocess
+  (pps ppx_sexp_conv ppx_deriving.show ppx_deriving.eq ppx_deriving_yojson)))
+
+(rule
+ (targets asset.ml)
+ (deps
+  ../../asset/main.css
+  ../../asset/annotation-tool.js
+  (source_tree ../../asset))
+ (enabled_if
+  (<> %{profile} dev))
+ (action
+  (run %{bin:ocaml-crunch} -e ico -e png -e js -e json -e svg -e txt -e css
+    -m plain ../../asset -o %{targets})))
+
+(rule
+ (targets asset.ml)
+ (enabled_if
+  (= %{profile} dev))
+ (action
+  (write-file asset.ml
+    "let read _ = failwith \"Asset is only usable in production\"")))
+
+(include_subdirs unqualified)

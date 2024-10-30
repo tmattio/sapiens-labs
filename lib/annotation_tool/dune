@@ -1,0 +1,23 @@
+(library
+ (name sapiens_annotation_tool)
+ (public_name sapiens.annotation-tool)
+ (libraries js_of_ocaml brr lwd tyxml-lwd sapiens.common)
+ (modes byte)
+ (preprocess
+  (pps js_of_ocaml-ppx)))
+
+(include_subdirs unqualified)
+
+(rule
+ (targets config.ml)
+ (enabled_if
+  (= %{profile} dev))
+ (action
+  (write-file config.ml "let url = \"http://localhost:3000/\"")))
+
+(rule
+ (targets config.ml)
+ (enabled_if
+  (= %{profile} release))
+ (action
+  (write-file config.ml "let url = \"https://sapiens-labs.herokuapp.com/\"")))
